@@ -4,13 +4,14 @@ import { ITransaction } from '@/lib/models/Transaction';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const db = await getDatabase();
     const transaction = await db
       .collection<ITransaction>('transactions')
-      .findOne({ id: params.id });
+      .findOne({ id });
     
     if (!transaction) {
       return NextResponse.json(
@@ -41,8 +42,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const body = await request.json();
     const db = await getDatabase();
@@ -56,7 +58,7 @@ export async function PUT(
 
     const result = await db
       .collection<ITransaction>('transactions')
-      .updateOne({ id: params.id }, { $set: updateData });
+      .updateOne({ id }, { $set: updateData });
 
     if (result.matchedCount === 0) {
       return NextResponse.json(
@@ -67,7 +69,7 @@ export async function PUT(
 
     const updatedTransaction = await db
       .collection<ITransaction>('transactions')
-      .findOne({ id: params.id });
+      .findOne({ id });
 
     if (!updatedTransaction) {
       return NextResponse.json(
@@ -98,13 +100,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const db = await getDatabase();
     const result = await db
       .collection<ITransaction>('transactions')
-      .deleteOne({ id: params.id });
+      .deleteOne({ id });
 
     if (result.deletedCount === 0) {
       return NextResponse.json(

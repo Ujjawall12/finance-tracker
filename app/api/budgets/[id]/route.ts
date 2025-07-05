@@ -4,13 +4,14 @@ import { IBudget } from '@/lib/models/Budget';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const db = await getDatabase();
     const budget = await db
       .collection<IBudget>('budgets')
-      .findOne({ id: params.id });
+      .findOne({ id });
     
     if (!budget) {
       return NextResponse.json(
@@ -39,8 +40,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const body = await request.json();
     const db = await getDatabase();
@@ -53,7 +55,7 @@ export async function PUT(
 
     const result = await db
       .collection<IBudget>('budgets')
-      .updateOne({ id: params.id }, { $set: updateData });
+      .updateOne({ id }, { $set: updateData });
 
     if (result.matchedCount === 0) {
       return NextResponse.json(
@@ -64,7 +66,7 @@ export async function PUT(
 
     const updatedBudget = await db
       .collection<IBudget>('budgets')
-      .findOne({ id: params.id });
+      .findOne({ id });
 
     if (!updatedBudget) {
       return NextResponse.json(
@@ -93,13 +95,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const db = await getDatabase();
     const result = await db
       .collection<IBudget>('budgets')
-      .deleteOne({ id: params.id });
+      .deleteOne({ id });
 
     if (result.deletedCount === 0) {
       return NextResponse.json(
