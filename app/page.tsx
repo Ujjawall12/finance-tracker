@@ -27,7 +27,7 @@ export default function Home() {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [showBudgetForm, setShowBudgetForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [editingBudget, setBudget] = useState<Budget | null>(null);
+  const [editingBudget, setBudget] = useState<Budget | undefined>(undefined);
 
   const handleAddTransaction = async (data: any) => {
     try {
@@ -76,7 +76,7 @@ export default function Home() {
     if (editingBudget) {
       try {
         await updateBudget(editingBudget.id, data);
-        setBudget(null);
+        setBudget(undefined);
         setShowBudgetForm(false);
       } catch (error) {
         console.error('Failed to update budget:', error);
@@ -172,7 +172,7 @@ export default function Home() {
                       onSubmit={editingBudget ? handleUpdateBudget : handleAddBudget}
                       onCancel={() => {
                         setShowBudgetForm(false);
-                        setBudget(null);
+                        setBudget(undefined);
                       }}
                       existingBudgets={budgets}
                     />
